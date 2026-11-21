@@ -1,15 +1,11 @@
 import java.util.Properties
 import java.io.FileInputStream
-import kotlin.math.sign
 
-//Membaca konfigurasi key.properties
-val keystorePropertiesFile = rootProject.file("key.properties")
+// Tambahkan kode ini SEBELUM blok "android {"
 val keystoreProperties = Properties()
-
+val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
-    FileInputStream(keystorePropertiesFile).use {
-        keystoreProperties.load(it)
-    }
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 plugins {
@@ -46,18 +42,15 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(
-                keystoreProperties["storeFile"] as String
-            )
-            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String?
+            keyPassword = keystoreProperties["keyPassword"] as String?
+            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+            storePassword = keystoreProperties["storePassword"] as String?
         }
     }
 
-
     buildTypes {
-        release{
+        release {
             signingConfig = signingConfigs.getByName("release")
         }
     }
